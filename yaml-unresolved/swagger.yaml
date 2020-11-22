@@ -1,0 +1,379 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Test api for project
+  description: This api is a test version to connect the backend and frontend
+  
+servers: 
+  - url: https://app.<insertname>.com/api
+paths: 
+  /accounts/{accountID}:
+    get:
+      description: Returns an account by ID
+      parameters: 
+      - name: accountID
+        in: path
+        required: true
+        description: The ID of the account to return (UUID)
+        schema:
+          type: string
+          pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+        example: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: 
+                - ID
+                - Name
+                - Email
+                properties:
+                  ID:
+                    type: string
+                    pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+                  Name:
+                    type: string
+                  Email:
+                    type: string
+              example:
+                { ID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a1, Name: Mark Wijnbergen, Email: markwijnbergen@hey.com }      
+        '400':
+          description: The specified account ID is invalID
+        '401':
+          description: Authentication failed
+        '404':
+          description: Account not found
+    delete:
+      description: Delete the account with this ID
+      parameters: 
+      - name: accountID
+        in: path
+        required: true
+        description: The ID of the account to return (UUID)
+        schema:
+          type: string
+          pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+          example: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a1
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Authentication failed
+        '404':
+          description: Account not found
+  /accounts/{accountID}/projects:
+    get:
+      description: returns all projects where this account is involved in 
+      parameters: 
+      - name: accountID
+        in: path
+        required: true
+        description: The ID of the account
+        schema:
+          type: string
+          pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+          example: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                properties:
+                  projects:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        projectID:
+                          type: string
+                          pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+                        projectName:
+                          type: string
+              example:
+                {projects: [{projectID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a1, projectName: project 1}, {projectID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2, projectName: project 2}]}
+                    
+  /authentication/login:
+    post:
+      description: logging in the account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: 
+                - grantType
+                - emailAddress
+              properties:
+                grantType:
+                  type: string
+                  enum: [password, autenthicationToken]
+                emailAddress:
+                  type: string
+                password:
+                  type: string
+                refreshToken:
+                  type: string
+                  pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+            examples:
+              password:
+                value:
+                  grantType: password
+                  emailAddress: markwijnbergen@hey.com
+                  password: password 
+              token:
+                value:
+                  grantType: password
+                  emailAddress: markwijnbergen@hey.com
+                  refreshToken: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: 
+                  - accountID
+                  - accessToken
+                  - refreshToken
+                properties:
+                  accountID:
+                    type: string
+                    description: The account ID.
+                    pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+                  accessToken:
+                    type: string
+                    description: The access token.
+                    pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+                  refreshToken:
+                    type: string
+                    description: The refresh token.
+                    pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+              example: 
+                {accountID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2, accessToken: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2, refreshToken: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2}
+  /authentication/revoke:
+    post:
+      description: logging out the account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: 
+                - accessToken
+              properties:
+                accessToken:
+                  type: string
+                  pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+            example: 
+              {accessToken: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2}
+      responses:
+        '200':
+          description: OK
+  /projects/{projectID}/{accountID}/tests:
+    get:
+      description: Get all tests that need to be performed by account
+      parameters: 
+      - name: projectID
+        in: path
+        required: true
+        description: The ID of the project to return (UUID)
+        schema:
+          type: string
+          pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+          example: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2
+      - name: accountID
+        in: path
+        required: true
+        description: The ID of the account to return (UUID)
+        schema:
+          type: string
+          pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+          example: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                properties:
+                  tests:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        testID:
+                          type: string
+                          pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+                        testName:
+                          type: string
+              example:
+                {tests:[{testID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2, testName: test 1}, {testID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a3, testName: test 2}]}
+        '401':
+          description: Authentication failed
+        '404':
+          description: Account not found
+  /projects/{projectID}/genericTests/{testID}:
+    get:
+      description: Get a generic test with specific ID
+      parameters: 
+      - name: projectID
+        in: path
+        required: true
+        description: The ID of the project to return
+        schema:
+          type: string
+          pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+          example: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2
+      - name: testID
+        in: path
+        required: true
+        description: The ID of the test to return
+        schema:
+          type: string
+          pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+          example: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                required:
+                  - title
+                  - description
+                  - displayAnswers
+                  - finalRemark
+                  - questions
+                type: object
+                properties:
+                  title:
+                    type: string
+                    description: Title of questionnaire
+                  description:
+                    type: string
+                    description: Description of questionnaire
+                  displayAnswers:
+                    type: boolean
+                    description: To determine whether the answers should be displayed at the end of the questionnaire
+                  finalRemark:
+                    type: string
+                    description: Final remakrs at the end of the questionnaire
+                  questions:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        question:
+                          type: string
+                        questionType:
+                          type: string
+                          enum: [openQuestion, multipleChoice, slider]
+                        answers:
+                          type: array
+                          items:
+                            type: string
+              example:
+                {title: Title of Questionnaire, description: Hi thanks for joining, displayAnswers: true, finalRemark: Thanks for your participation, questions: [{question: whats your age?, questionType: openQuestion, answers: {}}, {question: whats your sex?, questionType: multipleChoice, answers: [male, female]}, {question: rate your happines, questionType: slider, answers: [very unhappy, unhappy, moderate, happy, very happy]} ]}
+    post:
+      description: Submit the answer to the specific 
+      parameters: 
+      - name: projectID
+        in: path
+        required: true
+        description: The ID of the project to return
+        schema:
+          type: string
+          pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+          example: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2
+      - name: testID
+        in: path
+        required: true
+        description: The ID of the test to return (UUID)
+        schema:
+          type: string
+          pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+          example: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accountID:
+                    type: string
+                    pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+                  answers:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        question:
+                          type: integer
+                        answer:
+                          type: string
+                        timeToAnswer:
+                          type: number
+                          description: time in milliseconds
+              example:
+                {accountID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2, answers: [{question: 1, answer: yo mama is so fat, timeToAnswer: 5000}, {question: 2, answer: They are taking the hobbits to Isengard, timeToAnswer: 3999}] }
+  /signup:
+    post:
+      description: Sends an email address that needs to be signed up
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - senderAccountID
+                - emailAddress
+              properties:
+                senderAccountID:
+                  type: string
+                  pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+                emailAddress:
+                  type: string
+            example:
+              {senderAccountID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2, emailAddress: markwijnbergen@heycom }
+      responses:
+        '200':
+          description: OK
+  /signup/create:
+    post:
+      description: Creates a new account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: 
+                - firstName
+                - lastName
+                - emailAddress
+                - senderAccountID
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                senderAccountID:
+                  type: string
+                  pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+                emailAddress:
+                  type: string
+            example:
+              { firstName: Mark, lastName: Wijnbergen, emailAddress: markwijnbergen@hey.com, senderAccountID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2 }
+      responses:
+        '200':
+          description: OK
