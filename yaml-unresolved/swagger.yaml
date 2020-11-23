@@ -26,6 +26,7 @@ paths:
           content:
             application/json:
               schema:
+                title: account
                 type: object
                 required: 
                 - ID
@@ -85,6 +86,7 @@ paths:
           content:
             application/json:
               schema:
+                title: projects
                 properties:
                   projects:
                     type: array
@@ -107,6 +109,7 @@ paths:
         content:
           application/json:
             schema:
+              title: loginBody
               type: object
               required: 
                 - grantType
@@ -139,6 +142,7 @@ paths:
           content:
             application/json:
               schema:
+                title: loginTokens
                 type: object
                 required: 
                   - accountID
@@ -168,6 +172,7 @@ paths:
         content:
           application/json:
             schema:
+              title: logoutBody
               type: object
               required: 
                 - accessToken
@@ -207,6 +212,7 @@ paths:
           content:
             application/json:
               schema:
+                title: tests
                 properties:
                   tests:
                     type: array
@@ -251,6 +257,7 @@ paths:
           content:
             application/json:
               schema:
+                title: genericTests
                 required:
                   - title
                   - description
@@ -307,12 +314,12 @@ paths:
           type: string
           pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
           example: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2
-      responses:
-        '200':
-          description: OK
-          content:
+      requestBody:
+        required: true
+        content:
             application/json:
               schema:
+                title: genericTestAnswers
                 type: object
                 properties:
                   accountID:
@@ -332,6 +339,9 @@ paths:
                           description: time in milliseconds
               example:
                 {accountID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2, answers: [{question: 1, answer: yo mama is so fat, timeToAnswer: 5000}, {question: 2, answer: They are taking the hobbits to Isengard, timeToAnswer: 3999}] }
+      responses:
+        '200':
+          description: OK
   /signup:
     post:
       operationId: SendEmailForSignUp
@@ -341,6 +351,7 @@ paths:
         content:
           application/json:
             schema:
+              title: signUp
               type: object
               required:
                 - senderAccountID
@@ -365,6 +376,7 @@ paths:
         content:
           application/json:
             schema:
+              title: AccountCreation
               type: object
               required: 
                 - firstName
