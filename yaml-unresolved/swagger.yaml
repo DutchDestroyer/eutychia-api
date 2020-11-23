@@ -9,6 +9,7 @@ servers:
 paths: 
   /accounts/{accountID}:
     get:
+      operationId: GetAccountById
       description: Returns an account by ID
       parameters: 
       - name: accountID
@@ -47,6 +48,7 @@ paths:
         '404':
           description: Account not found
     delete:
+      operationId: DeleteAccountById
       description: Delete the account with this ID
       parameters: 
       - name: accountID
@@ -66,6 +68,7 @@ paths:
           description: Account not found
   /accounts/{accountID}/projects:
     get:
+      operationId: GetProjectsOfAccount
       description: returns all projects where this account is involved in 
       parameters: 
       - name: accountID
@@ -95,9 +98,9 @@ paths:
                           type: string
               example:
                 {projects: [{projectID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a1, projectName: project 1}, {projectID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2, projectName: project 2}]}
-                    
   /authentication/login:
     post:
+      operationId: LogInWithAccount
       description: logging in the account
       requestBody:
         required: true
@@ -158,6 +161,7 @@ paths:
                 {accountID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2, accessToken: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2, refreshToken: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2}
   /authentication/revoke:
     post:
+      operationId: LogOutWithAccount
       description: logging out the account
       requestBody:
         required: true
@@ -178,6 +182,7 @@ paths:
           description: OK
   /projects/{projectID}/{accountID}/tests:
     get:
+      operationId: GetTestsToPerformByAccount
       description: Get all tests that need to be performed by account
       parameters: 
       - name: projectID
@@ -221,6 +226,7 @@ paths:
           description: Account not found
   /projects/{projectID}/genericTests/{testID}:
     get:
+      operationId: GetGenericTestOfProject
       description: Get a generic test with specific ID
       parameters: 
       - name: projectID
@@ -280,8 +286,9 @@ paths:
                           items:
                             type: string
               example:
-                {title: Title of Questionnaire, description: Hi thanks for joining, displayAnswers: true, finalRemark: Thanks for your participation, questions: [{question: whats your age?, questionType: openQuestion, answers: {}}, {question: whats your sex?, questionType: multipleChoice, answers: [male, female]}, {question: rate your happines, questionType: slider, answers: [very unhappy, unhappy, moderate, happy, very happy]} ]}
+                {title: Title of Questionnaire, description: Hi thanks for joining, displayAnswers: true, finalRemark: Thanks for your participation, questions: [{question: whats your age, questionType: openQuestion, answers: {}}, {question: whats your sex, questionType: multipleChoice, answers: [male, female]}, {question: rate your happines, questionType: slider, answers: [very unhappy, unhappy, moderate, happy, very happy]} ]}
     post:
+      operationId: SubmitAnswerToTest
       description: Submit the answer to the specific 
       parameters: 
       - name: projectID
@@ -327,6 +334,7 @@ paths:
                 {accountID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2, answers: [{question: 1, answer: yo mama is so fat, timeToAnswer: 5000}, {question: 2, answer: They are taking the hobbits to Isengard, timeToAnswer: 3999}] }
   /signup:
     post:
+      operationId: SendEmailForSignUp
       description: Sends an email address that needs to be signed up
       requestBody:
         required: true
@@ -350,6 +358,7 @@ paths:
           description: OK
   /signup/create:
     post:
+      operationId: CreateNewAccount
       description: Creates a new account
       requestBody:
         required: true
