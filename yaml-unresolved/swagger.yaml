@@ -5,7 +5,7 @@ info:
   description: This api is a test version to connect the backend and frontend
   
 servers: 
-  - url: https://app.<insertname>.com/api
+  - url: https://app.insertname.com/api
 paths: 
   /accounts/{accountID}:
     get:
