@@ -87,6 +87,7 @@ paths:
             application/json:
               schema:
                 title: projects
+                type: object
                 properties:
                   projects:
                     type: array
