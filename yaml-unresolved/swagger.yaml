@@ -331,6 +331,7 @@ paths:
                     type: array
                     items:
                       type: object
+                      title: genericAnswer
                       properties:
                         question:
                           type: integer
