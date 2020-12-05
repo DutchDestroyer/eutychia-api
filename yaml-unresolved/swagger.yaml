@@ -90,8 +90,10 @@ paths:
                 properties:
                   projects:
                     type: array
+                    title: projects
                     items:
                       type: object
+                      title: project
                       properties:
                         projectID:
                           type: string
