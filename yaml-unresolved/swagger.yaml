@@ -18,6 +18,8 @@ paths:
         description: The ID of the account to return (UUID)
         schema:
           type: string
+          title: schema_get_account_id
+          description: schema to get the account
           pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
         example: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a1
       responses:
@@ -26,8 +28,9 @@ paths:
           content:
             application/json:
               schema:
-                title: account
+                title: get_account_id_response
                 type: object
+                description: response to provide account details
                 required: 
                 - ID
                 - Name
@@ -36,10 +39,13 @@ paths:
                   ID:
                     type: string
                     pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+                    description: The id of the account
                   Name:
                     type: string
+                    description: the name of the account
                   Email:
                     type: string
+                    description: the email address of the account
               example:
                 { ID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a1, Name: Mark Wijnbergen, Email: markwijnbergen@hey.com }      
         '400':
@@ -58,6 +64,8 @@ paths:
         description: The ID of the account to return (UUID)
         schema:
           type: string
+          title: delete_account_id
+          description: schema to delete the account with a specific id
           pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
           example: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a1
       responses:
@@ -78,6 +86,8 @@ paths:
         description: The ID of the account
         schema:
           type: string
+          title: schema_projects_account_id
+          description: the schema to fetch the projects of a specific account
           pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
           example: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a1
       responses:
@@ -86,21 +96,26 @@ paths:
           content:
             application/json:
               schema:
-                title: account_projects
+                title: projects_account_id
+                description: response with the projects of a specific account
                 type: object
                 properties:
                   projects:
                     type: array
                     title: projects
+                    description: an array with all projects
                     items:
                       type: object
                       title: project
+                      description: a project object
                       properties:
                         projectID:
                           type: string
+                          description: the id of a project
                           pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
                         projectName:
                           type: string
+                          description: the name of a project
               example:
                 {projects: [{projectID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a1, projectName: project 1}, {projectID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2, projectName: project 2}]}
   /authentication/login:
@@ -112,7 +127,7 @@ paths:
         content:
           application/json:
             schema:
-              title: loginBody
+              title: login_account
               type: object
               required: 
                 - grantType
@@ -121,12 +136,16 @@ paths:
                 grantType:
                   type: string
                   enum: [password, autenthicationToken]
+                  description: type of grant type to log in with
                 emailAddress:
                   type: string
+                  description: account email address to log in with
                 password:
                   type: string
+                  description: password of the account to log in with
                 refreshToken:
                   type: string
+                  description: refreshtoken of the account to log in with
                   pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
             examples:
               password:
@@ -145,7 +164,8 @@ paths:
           content:
             application/json:
               schema:
-                title: loginTokens
+                title: account details
+                description: the account details provided when the user logs in
                 type: object
                 required: 
                   - accountID
@@ -175,13 +195,15 @@ paths:
         content:
           application/json:
             schema:
-              title: logoutBody
+              title: logout_account
+              description: schema to revoke access with the specific account
               type: object
               required: 
                 - accessToken
               properties:
                 accessToken:
                   type: string
+                  description: access token that needs to be revoked to log out
                   pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
             example: 
               {accessToken: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2}
@@ -198,6 +220,8 @@ paths:
         required: true
         description: The ID of the project to return (UUID)
         schema:
+          title: project_id
+          description: the id of the project to get the tests from
           type: string
           pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
           example: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2
@@ -206,6 +230,8 @@ paths:
         required: true
         description: The ID of the account to return (UUID)
         schema:
+          title: account_id
+          description: the id of the account to get the tests from
           type: string
           pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
           example: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2
@@ -216,16 +242,23 @@ paths:
             application/json:
               schema:
                 title: tests
+                description: tests that the account needs to perform for this specific project
                 properties:
-                  tests:
+                  testsToPerform:
                     type: array
+                    title: tests
+                    description: array of tests
                     items:
                       type: object
+                      title: test
+                      description: test to perform
                       properties:
                         testID:
                           type: string
+                          description: id of the test
                           pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
                         testName:
+                          description: name of the test
                           type: string
               example:
                 {tests:[{testID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2, testName: test 1}, {testID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a3, testName: test 2}]}
@@ -243,6 +276,8 @@ paths:
         required: true
         description: The ID of the project to return
         schema:
+          title: project_id
+          description: schema of the project id
           type: string
           pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
           example: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2
@@ -251,6 +286,8 @@ paths:
         required: true
         description: The ID of the test to return
         schema:
+          title: test_id
+          description: schema of the test id
           type: string
           pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
           example: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2
@@ -260,7 +297,8 @@ paths:
           content:
             application/json:
               schema:
-                title: genericTests
+                title: generic_test
+                description: schema of a generic test
                 required:
                   - title
                   - description
@@ -287,6 +325,7 @@ paths:
                       type: object
                       properties:
                         question:
+                          title: question
                           type: string
                         questionType:
                           type: string
@@ -324,23 +363,34 @@ paths:
               schema:
                 title: genericTestAnswers
                 type: object
+                description: The answers to a generic test
                 properties:
                   accountID:
                     type: string
+                    title: accountID
+                    description: the id of the account that performed this test
                     pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
                   answers:
+                    title: array of answers
+                    description: the array of answers for this questionnaire
                     type: array
                     items:
                       type: object
-                      title: genericAnswer
+                      title: answer to question
+                      description: the answer to a question
                       properties:
                         question:
                           type: integer
+                          title: question number
+                          description: the question number
                         answer:
                           type: string
+                          title: answer to question
+                          description: an answer to a question
                         timeToAnswer:
                           type: number
-                          description: time in milliseconds
+                          title: time to answer
+                          description: the time in milliseconds to answer the question
               example:
                 {accountID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2, answers: [{question: 1, answer: yo mama is so fat, timeToAnswer: 5000}, {question: 2, answer: They are taking the hobbits to Isengard, timeToAnswer: 3999}] }
       responses:
@@ -355,7 +405,8 @@ paths:
         content:
           application/json:
             schema:
-              title: signUp
+              title: sign up
+              description: schema for signing up
               type: object
               required:
                 - senderAccountID
@@ -363,8 +414,12 @@ paths:
               properties:
                 senderAccountID:
                   type: string
+                  title: sender account id
+                  description: account id of the account that invites the new user
                   pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
                 emailAddress:
+                  title: emailAddress
+                  description: the email address of the newly invited person
                   type: string
             example:
               {senderAccountID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2, emailAddress: markwijnbergen@heycom }
@@ -380,7 +435,8 @@ paths:
         content:
           application/json:
             schema:
-              title: AccountCreation
+              title: account_creation
+              description: the schema to create the new account
               type: object
               required: 
                 - firstName
@@ -389,10 +445,16 @@ paths:
                 - senderAccountID
               properties:
                 firstName:
+                  title: first name
+                  description: first name of the new user
                   type: string
                 lastName:
+                  title: last name
+                  description: last name of the new user
                   type: string
                 senderAccountID:
+                  title: sender account id
+                  description: the id of the account that invited the new user
                   type: string
                   pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
                 emailAddress:
