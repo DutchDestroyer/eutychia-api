@@ -86,7 +86,7 @@ paths:
           content:
             application/json:
               schema:
-                title: projects
+                title: account_projects
                 type: object
                 properties:
                   projects:
