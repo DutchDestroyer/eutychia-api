@@ -3,13 +3,22 @@ info:
   version: 1.0.0
   title: Test api for project
   description: This api is a test version to connect the backend and frontend
+
+components:
+  securitySchemes:
+    ApiKeyAuth:        # arbitrary name for the security scheme
+      type: http
+      scheme: bearer       # can be "header", "query" or "cookie"
+      bearerFormat: JWT  # name of the header, query parameter or cookie
   
 servers: 
   - url: https://app.insertname.com/api
 paths: 
   /accounts/{accountID}:
     get:
-      operationId: GetAccountById
+      security: 
+        - ApiKeyAuth: []
+      operationId: GetAccountByID
       description: Returns an account by ID
       parameters: 
       - name: accountID
@@ -49,13 +58,15 @@ paths:
               example:
                 { ID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a1, Name: Mark Wijnbergen, Email: markwijnbergen@hey.com }      
         '400':
-          description: The specified account ID is invalID
+          description: The specified account ID is invalid
         '401':
           description: Authentication failed
         '404':
           description: Account not found
     delete:
-      operationId: DeleteAccountById
+      security: 
+          - ApiKeyAuth: []
+      operationId: DeleteAccountByID
       description: Delete the account with this ID
       parameters: 
       - name: accountID
@@ -71,12 +82,16 @@ paths:
       responses:
         '200':
           description: OK
+        '400':
+          description: The specified account ID is invalid
         '401':
           description: Authentication failed
         '404':
           description: Account not found
   /accounts/{accountID}/projects:
     get:
+      security: 
+        - ApiKeyAuth: []
       operationId: GetProjectsOfAccount
       description: returns all projects where this account is involved in 
       parameters: 
@@ -118,6 +133,12 @@ paths:
                           description: the name of a project
               example:
                 {projects: [{projectID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a1, projectName: project 1}, {projectID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2, projectName: project 2}]}
+        '400':
+          description: The specified account ID is invalid
+        '401':
+          description: Authentication failed
+        '404':
+          description: Account not found
   /authentication/login:
     post:
       operationId: LogInWithAccount
@@ -143,9 +164,9 @@ paths:
                 password:
                   type: string
                   description: password of the account to log in with
-                refreshToken:
+                accessToken:
                   type: string
-                  description: refreshtoken of the account to log in with
+                  description: accesstoken of the account to log in with
                   pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
             examples:
               password:
@@ -155,39 +176,89 @@ paths:
                   password: password 
               token:
                 value:
-                  grantType: password
+                  grantType: accessToken
                   emailAddress: markwijnbergen@hey.com
-                  refreshToken: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2
+                  accessToken: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                title: account details
-                description: the account details provided when the user logs in
+                title: JWT account details
+                description: the account details provided when the user logs in as a JWT token
                 type: object
                 required: 
-                  - accountID
-                  - accessToken
-                  - refreshToken
+                  - JWT
                 properties:
-                  accountID:
+                  JWT:
                     type: string
-                    description: The account ID.
-                    pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
-                  accessToken:
-                    type: string
-                    description: The access token.
-                    pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
-                  refreshToken:
-                    type: string
-                    description: The refresh token.
-                    pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+                    description: The jwt token with all information.
               example: 
-                {accountID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2, accessToken: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2, refreshToken: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2}
+                {JWT: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SUQiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ik1hcmsgV2lqbmJlcmdlbiIsImFjY2Vzc3Rva2VuIjoxNTE2MjM5MDIyLCJyZWZyZXNodG9rZW4iOjc1Mzk3NTM1N30.V1JMLTr7R_yPdkbpZQ9kpUmmmq8cyEbpNRk5B78fpYw}
+        '400':
+          description: The specified account ID is invalid
+        '401':
+          description: Authentication failed
+        '404':
+          description: Account not found
+  /authentication/refresh:
+    post:
+      operationId: RefreshAccessToken
+      description: Refresh the access token of the account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              title: Refresh details
+              description: Details necessary to refresh the access token
+              type: object
+              required: 
+                - accountID
+                - refreshToken
+              properties:
+                accountID:
+                  type: string
+                  description: The account ID.
+                  pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+                refreshToken:
+                  type: string
+                  description: the refreshToken used to update the acces token
+                  pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+            example: 
+              password:
+                value:
+                  grantType: password
+                  emailAddress: markwijnbergen@hey.com
+                  password: password 
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                title: JWT account details
+                description: the account details provided when the user logs in as a JWT token
+                type: object
+                required: 
+                  - JWT
+                properties:
+                  JWT:
+                    type: string
+                    description: The jwt token with all information.
+              example: 
+                {JWT: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SUQiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ik1hcmsgV2lqbmJlcmdlbiIsImFjY2Vzc3Rva2VuIjoxNTE2MjM5MDIyLCJyZWZyZXNodG9rZW4iOjc1Mzk3NTM1N30.V1JMLTr7R_yPdkbpZQ9kpUmmmq8cyEbpNRk5B78fpYw}    
+        '400':
+          description: The specified account ID is invalid
+        '401':
+          description: Authentication failed
+        '404':
+          description: Account not found
   /authentication/revoke:
     post:
+      security: 
+        - ApiKeyAuth: []
       operationId: LogOutWithAccount
       description: logging out the account
       requestBody:
@@ -212,6 +283,8 @@ paths:
           description: OK
   /projects/{projectID}/{accountID}/tests:
     get:
+      security: 
+        - ApiKeyAuth: []
       operationId: GetTestsToPerformByAccount
       description: Get all tests that need to be performed by account
       parameters: 
@@ -241,8 +314,9 @@ paths:
           content:
             application/json:
               schema:
-                title: tests
+                title: tests_project
                 description: tests that the account needs to perform for this specific project
+                type: object
                 properties:
                   testsToPerform:
                     type: array
@@ -260,14 +334,22 @@ paths:
                         testName:
                           description: name of the test
                           type: string
+                        testType:
+                          type: string
+                          enum: [generic, stroopDirection, stroopColor]
+                          description: type of the test
               example:
-                {tests:[{testID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2, testName: test 1}, {testID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a3, testName: test 2}]}
+                {testsToPerform:[{testID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2, testName: test 1}, {testID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a3, testName: test 2}]}
+        '400':
+          description: The specified project ID or account ID is invalid
         '401':
           description: Authentication failed
         '404':
           description: Account not found
   /projects/{projectID}/genericTests/{testID}:
     get:
+      security: 
+        - ApiKeyAuth: []
       operationId: GetGenericTestOfProject
       description: Get a generic test with specific ID
       parameters: 
@@ -336,7 +418,15 @@ paths:
                             type: string
               example:
                 {title: Title of Questionnaire, description: Hi thanks for joining, displayAnswers: true, finalRemark: Thanks for your participation, questions: [{question: whats your age, questionType: openQuestion, answers: {}}, {question: whats your sex, questionType: multipleChoice, answers: [male, female]}, {question: rate your happines, questionType: slider, answers: [very unhappy, unhappy, moderate, happy, very happy]} ]}
+        '400':
+          description: The specified project ID or test ID is invalid
+        '401':
+          description: Authentication failed
+        '404':
+          description: Account not found
     post:
+      security: 
+        - ApiKeyAuth: []
       operationId: SubmitAnswerToTest
       description: Submit the answer to the specific 
       parameters: 
@@ -396,8 +486,16 @@ paths:
       responses:
         '200':
           description: OK
+        '400':
+          description: The specified project ID or test ID is invalid
+        '401':
+          description: Authentication failed
+        '404':
+          description: Account not found
   /signup:
     post:
+      security: 
+        - ApiKeyAuth: []
       operationId: SendEmailForSignUp
       description: Sends an email address that needs to be signed up
       requestBody:
@@ -426,8 +524,16 @@ paths:
       responses:
         '200':
           description: OK
+        '400':
+          description: The specified account ID or email address is invalid
+        '401':
+          description: Authentication failed
+        '404':
+          description: Account not found
   /signup/create:
     post:
+      security: 
+        - ApiKeyAuth: []
       operationId: CreateNewAccount
       description: Creates a new account
       requestBody:
@@ -464,3 +570,9 @@ paths:
       responses:
         '200':
           description: OK
+        '400':
+          description: The specified account ID is invalid
+        '401':
+          description: Authentication failed
+        '404':
+          description: Account not found
