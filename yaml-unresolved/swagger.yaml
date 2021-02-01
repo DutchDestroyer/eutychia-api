@@ -185,17 +185,29 @@ paths:
           content:
             application/json:
               schema:
-                title: JWT account details
+                title: Account details
                 description: the account details provided when the user logs in as a JWT token
                 type: object
                 required: 
-                  - JWT
+                  - accountID
+                  - accessToken
+                  - refreshToken
                 properties:
-                  JWT:
+                  accountID:
                     type: string
-                    description: The jwt token with all information.
+                    description: The account id.
+                  accessToken:
+                    type: string
+                    description: The access token.
+                  refreshToken:
+                    type: string
+                    description: The refresh token.
               example: 
-                {JWT: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SUQiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ik1hcmsgV2lqbmJlcmdlbiIsImFjY2Vzc3Rva2VuIjoxNTE2MjM5MDIyLCJyZWZyZXNodG9rZW4iOjc1Mzk3NTM1N30.V1JMLTr7R_yPdkbpZQ9kpUmmmq8cyEbpNRk5B78fpYw}
+                {
+                  accountID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2,
+                  accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SUQiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ik1hcmsgV2lqbmJlcmdlbiIsImFjY2Vzc3Rva2VuIjoxNTE2MjM5MDIyLCJyZWZyZXNodG9rZW4iOjc1Mzk3NTM1N30.V1JMLTr7R_yPdkbpZQ9kpUmmmq8cyEbpNRk5B78fpYw,
+                  refreshToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SUQiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ik1hcmsgV2lqbmJlcmdlbiIsImFjY2Vzc3Rva2VuIjoxNTE2MjM5MDIyLCJyZWZyZXNodG9rZW4iOjc1Mzk3NTM1N30.V1JMLTr7R_yPdkbpZQ9kpUmmmq8cyEbpNRk5B78fpYw
+                }
         '400':
           description: The specified account ID is invalid
         '401':
