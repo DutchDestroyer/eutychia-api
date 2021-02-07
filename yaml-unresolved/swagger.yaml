@@ -132,7 +132,101 @@ paths:
                           type: string
                           description: the name of a project
               example:
-                {projects: [{projectID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a1, projectName: project 1}, {projectID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2, projectName: project 2}]}
+                {
+                  projects: [
+                    {
+                      projectID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a1,
+                       projectName: project 1
+                    },
+                    {
+                      projectID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2,
+                      projectName: project 2
+                    }
+                  ]
+                }
+        '400':
+          description: The specified account ID is invalid
+        '401':
+          description: Authentication failed
+        '404':
+          description: Account not found
+    post:
+      description: Creates a new project
+      operationId: CreatesNewProject
+      parameters: 
+      - name: accountID
+        in: path
+        required: true
+        description: The ID of the account
+        schema:
+          type: string
+          title: schema_projects_account_id
+          description: the schema to fetch the projects of a specific account
+          pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+          example: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              title: create_project
+              type: object
+              required:
+                - projectTitle
+                - participants
+                - tests
+              properties:
+                projectTitle:
+                  type: string
+                  description: title of project
+                participants:
+                  type: array
+                  title: participants
+                  description: participants of project
+                  items:
+                    type: object
+                    title: participant
+                    description: participant of project
+                    properties:
+                      firstame:
+                        type: string
+                        description: firstname of the participant
+                      lastname:
+                        description: lastname of the participant
+                        type: string
+                      emailAddress:
+                        type: string
+                        description: email address of the participant
+                tests:
+                  type: array
+                  title: tests
+                  description: tests to perform as part of this project
+                  items:
+                    type: string
+                    description: names of tests to perform
+            example:
+              {
+                projectTitle: Example Project,
+                participants: [
+                  {
+                    firstmame: Mark,
+                    lastname: Wijnbergen,
+                    emailAddress: markwijnbergen@hey.com
+                  },
+                  {
+                    firstname: John,
+                    lastname: Doe,
+                    emailAddress: johndoe@bla.com
+                  }
+                ],
+                tests: [
+                  test1,
+                  test2
+                ]
+              }
+      responses:
+        '200':
+          description: OK
         '400':
           description: The specified account ID is invalid
         '401':
