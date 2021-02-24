@@ -688,3 +688,61 @@ paths:
           description: Authentication failed
         '404':
           description: Account not found
+  /test/{accountID}:
+    get:
+      security:
+        - ApiKeyAuth: []
+      operationId: GetAllTests
+      description: Get all tests that are stored in the backend and are accessible for this account
+      parameters:
+      - name: accountID
+        in: path
+        required: true
+        description: The ID of the account to return (UUID)
+        schema:
+          title: account_id
+          description: the id of the account to get the tests from
+          type: string
+          pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+          example: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2
+      responses:
+        '200':
+          description: OK
+          content: 
+            application/json:
+              schema:
+                title: TestsForAccount
+                description: all tests that researcher can address
+                type: array
+                items:
+                  type: object
+                  title: TestsForAccount
+                  properties:
+                    testID:
+                      type: string
+                      description: the id of a test
+                      pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+                    testName:
+                      type: string
+                      description: the name of a test
+              example:
+                {
+                  tests: [
+                    {
+                      testID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a1,
+                      testName: test 1
+                    },
+                    {
+                      testID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2,
+                      testName: test 2
+                    }
+                  ]
+                }
+
+        '400':
+          description: The specified account ID is invalid
+        '401':
+          description: Authentication failed
+        '404':
+          description: Account not found
+  
