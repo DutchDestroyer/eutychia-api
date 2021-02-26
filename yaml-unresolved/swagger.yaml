@@ -250,7 +250,7 @@ paths:
               properties:
                 grantType:
                   type: string
-                  enum: [password, autenthicationToken]
+                  enum: [password, refreshToken]
                   description: type of grant type to log in with
                 emailAddress:
                   type: string
@@ -258,9 +258,16 @@ paths:
                 password:
                   type: string
                   description: password of the account to log in with
-                accessToken:
+                refreshToken:
                   type: string
-                  description: accesstoken of the account to log in with
+                  description: refreshToken of the account to log in with
+                sessionID:
+                  type: string
+                  description: session of account wrl the refreshToken
+                  pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+                accountID:
+                  type: string
+                  description: id of the account
                   pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
             examples:
               password:
@@ -270,9 +277,11 @@ paths:
                   password: password 
               token:
                 value:
-                  grantType: accessToken
+                  grantType: refreshToken
                   emailAddress: markwijnbergen@hey.com
-                  accessToken: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2
+                  refreshToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SUQiOiIwYThiYTlhZC1hOTNkLTQ5OTEtOGMyMy1jMTc4YjA5ZmU2YTIiLCJzZXNzaW9uSUQiOiIwYThiYTlhZC1hOTNkLTQ5OTEtOGMyMy1jMTc4YjA5ZmU2YTIiLCJleHBpcnlEYXRlIjoiMjAyMS0wMi0wNFQxNzowMTo0MC40NzRaIn0.JvCzrIHI60bm-Qekl3De0j4UEtQS-BykbDt9bhtmhLY
+                  sessionID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2,
+                  accountID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2,
       responses:
         '200':
           description: OK
@@ -284,6 +293,7 @@ paths:
                 type: object
                 required: 
                   - accountID
+                  - sessionID
                   - accessToken
                   - refreshToken
                   - accountType
@@ -291,6 +301,10 @@ paths:
                   accountID:
                     type: string
                     description: The account id.
+                  sessionID:
+                    type: string
+                    description: logged in SessionID
+                    pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
                   accessToken:
                     type: string
                     description: The access token.
@@ -304,8 +318,9 @@ paths:
               example: 
                 {
                   accountID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2,
-                  accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SUQiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ik1hcmsgV2lqbmJlcmdlbiIsImFjY2Vzc3Rva2VuIjoxNTE2MjM5MDIyLCJyZWZyZXNodG9rZW4iOjc1Mzk3NTM1N30.V1JMLTr7R_yPdkbpZQ9kpUmmmq8cyEbpNRk5B78fpYw,
-                  refreshToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SUQiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ik1hcmsgV2lqbmJlcmdlbiIsImFjY2Vzc3Rva2VuIjoxNTE2MjM5MDIyLCJyZWZyZXNodG9rZW4iOjc1Mzk3NTM1N30.V1JMLTr7R_yPdkbpZQ9kpUmmmq8cyEbpNRk5B78fpYw,
+                  sessionID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2,
+                  accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SUQiOiIwYThiYTlhZC1hOTNkLTQ5OTEtOGMyMy1jMTc4YjA5ZmU2YTIiLCJzZXNzaW9uSUQiOiIwYThiYTlhZC1hOTNkLTQ5OTEtOGMyMy1jMTc4YjA5ZmU2YTIiLCJleHBpcnlEYXRlIjoiMjAyMS0wMi0wNFQxNzowMTo0MC40NzRaIn0.JvCzrIHI60bm-Qekl3De0j4UEtQS-BykbDt9bhtmhLY,
+                  refreshToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SUQiOiIwYThiYTlhZC1hOTNkLTQ5OTEtOGMyMy1jMTc4YjA5ZmU2YTIiLCJzZXNzaW9uSUQiOiIwYThiYTlhZC1hOTNkLTQ5OTEtOGMyMy1jMTc4YjA5ZmU2YTIiLCJleHBpcnlEYXRlIjoiMjAyMS0wMi0wNFQxNzowMTo0MC40NzRaIn0.JvCzrIHI60bm-Qekl3De0j4UEtQS-BykbDt9bhtmhLY,
                   accountType: researcher
                 }
         '400':
