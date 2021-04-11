@@ -450,13 +450,27 @@ paths:
               type: object
               required: 
                 - accessToken
+                - accountID
+                - sessionID
               properties:
                 accessToken:
                   type: string
                   description: access token that needs to be revoked to log out
                   pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+                accountID:
+                  type: string
+                  description: The account ID.
+                  pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+                sessionID:
+                  type: string
+                  description: The id of the session, related to the refresh token
+                  pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
             example: 
-              {accessToken: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2}
+              {
+                accessToken: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2,
+                accountID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2,
+                sessionID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2,
+              }
       responses:
         '200':
           description: OK
