@@ -88,6 +88,53 @@ paths:
           description: Authentication failed
         '404':
           description: Account not found
+  /accounts/{accountID}/finalize:
+    post:
+      operationId: FinalizeAccountCreation
+      description: finalize the account creation when user is added, this happens when email is senderAccountID
+      parameters: 
+      - name: accountID
+        in: path
+        required: true
+        description: The ID of the account
+        schema:
+          type: string
+          title: schema_projects_account_id
+          description: the schema to fetch the projects of a specific account
+          pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+          example: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              title: account_creation_finalize
+              type: object
+              required:
+                - emailAddress
+                - firstName
+                - lastName
+                - password
+              properties:
+                emailAddress:
+                  type: string
+                  description: email address of the participant
+                firstName:
+                  type: string
+                  description: first name of the user
+                lastName:
+                  type: string
+                  description: last name of the user
+                password:
+                  type: string
+                  description: password of the user
+            example:
+              {emailAddress: markwijnbergen@hey.com, firstName: mark, lastName: Wijnbergen, password: password123}
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: The specified account ID or email address is invalid      
   /accounts/{accountID}/projects:
     get:
       security: 
@@ -615,90 +662,6 @@ paths:
           description: OK
         '400':
           description: The specified project ID or test ID is invalid
-        '401':
-          description: Authentication failed
-        '404':
-          description: Account not found
-  /signup:
-    post:
-      security: 
-        - ApiKeyAuth: []
-      operationId: SendEmailForSignUp
-      description: Sends an email address that needs to be signed up
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              title: sign up
-              description: schema for signing up
-              type: object
-              required:
-                - senderAccountID
-                - emailAddress
-              properties:
-                senderAccountID:
-                  type: string
-                  title: sender account id
-                  description: account id of the account that invites the new user
-                  pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
-                emailAddress:
-                  title: emailAddress
-                  description: the email address of the newly invited person
-                  type: string
-            example:
-              {senderAccountID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2, emailAddress: markwijnbergen@heycom }
-      responses:
-        '200':
-          description: OK
-        '400':
-          description: The specified account ID or email address is invalid
-        '401':
-          description: Authentication failed
-        '404':
-          description: Account not found
-  /signup/create:
-    post:
-      security: 
-        - ApiKeyAuth: []
-      operationId: CreateNewAccount
-      description: Creates a new account
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              title: account_creation
-              description: the schema to create the new account
-              type: object
-              required: 
-                - firstName
-                - lastName
-                - emailAddress
-                - senderAccountID
-              properties:
-                firstName:
-                  title: first name
-                  description: first name of the new user
-                  type: string
-                lastName:
-                  title: last name
-                  description: last name of the new user
-                  type: string
-                senderAccountID:
-                  title: sender account id
-                  description: the id of the account that invited the new user
-                  type: string
-                  pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
-                emailAddress:
-                  type: string
-            example:
-              { firstName: Mark, lastName: Wijnbergen, emailAddress: markwijnbergen@hey.com, senderAccountID: 0a8ba9ad-a93d-4991-8c23-c178b09fe6a2 }
-      responses:
-        '200':
-          description: OK
-        '400':
-          description: The specified account ID is invalid
         '401':
           description: Authentication failed
         '404':
